@@ -3,12 +3,19 @@ import 'package:Yummy/screens/UserProductsScreen.dart';
 import "package:flutter/material.dart";
 
 class HomePageDrawer extends StatelessWidget {
-  Widget _buildChipWidget(IconData icon, String title, Function onTapHandler) {
+  Widget _buildChipWidget(IconData icon, String title, Function onTapHandler,
+      BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(4),
-      child: Chip(
-        backgroundColor: Colors.blue[200],
-        label: Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.3, 1],
+              colors: [Color(0xff80D0C7), Color(0xff0093E9)])),
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      child: RaisedButton(
+        // hoverColor: Theme.of(context).primaryColorDark,//no effect when using as mobile app
+        child: Container(
           child: ListTile(
             leading: Icon(
               icon,
@@ -22,6 +29,7 @@ class HomePageDrawer extends StatelessWidget {
                   color: Colors.white,
                 )),
             onTap: onTapHandler,
+            onLongPress: onTapHandler,
           ),
         ),
       ),
@@ -38,29 +46,18 @@ class HomePageDrawer extends StatelessWidget {
             automaticallyImplyLeading: false,
           ),
           Divider(),
-          _buildChipWidget(
-            Icons.shopping_cart_sharp,
-            "Shopping",
-            () {
-              Navigator.of(context).pushReplacementNamed("/");
-            },
-          ),
+          _buildChipWidget(Icons.shopping_cart, "Shopping", () {
+            Navigator.of(context).pushReplacementNamed("/");
+          }, context),
           Divider(),
-          _buildChipWidget(
-            Icons.payment,
-            "My Orders",
-            () {
-              Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
-            },
-          ),
+          _buildChipWidget(Icons.payment, "My Orders", () {
+            Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
+          }, context),
           Divider(),
-          _buildChipWidget(
-            Icons.shop,
-            "Manage Products",
-            () {
-              Navigator.of(context).pushReplacementNamed(UserProductsScreen.routeName);
-            },
-          ),
+          _buildChipWidget(Icons.shop, "Manage Products", () {
+            Navigator.of(context)
+                .pushReplacementNamed(UserProductsScreen.routeName);
+          }, context),
         ],
       ),
     );

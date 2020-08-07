@@ -3,7 +3,7 @@ import 'package:Yummy/widgets/UserProductItem.dart';
 import 'package:flutter/material.dart';
 import "package:provider/provider.dart";
 
-import "../providers/products.dart";
+import '../providers/Products.dart';
 
 //Screen that manages user's products
 class UserProductsScreen extends StatelessWidget {
@@ -33,6 +33,7 @@ class UserProductsScreen extends StatelessWidget {
           itemCount: productsListner.items.length,
           // builds individual product item from the product items obtained from productsListner
           itemBuilder: (context, index) => UserProductItem(
+            id: productsListner.items[index].id,
             title: productsListner.items[index].title,
             price: productsListner.items[index].price,
             imageUrl: productsListner.items[index].imageUrl,

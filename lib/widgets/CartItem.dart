@@ -10,7 +10,12 @@ class CartItem extends StatelessWidget {
   final int quantity;
   final String title;
 
-  CartItem({@required this.id, @required this.productId, @required this.price, @required this.quantity, @required this.title});
+  CartItem(
+      {@required this.id,
+      @required this.productId,
+      @required this.price,
+      @required this.quantity,
+      @required this.title});
   @override
   Widget build(BuildContext context) {
     //can be deleted by swipping left
@@ -34,7 +39,8 @@ class CartItem extends StatelessWidget {
             context: context,
             builder: (ctx) => AlertDialog(
                   title: Text("Are you sure?"),
-                  content: Text("Do you want to remove the item from the cart?"),
+                  content:
+                      Text("Do you want to remove the item from the cart?"),
                   actions: <Widget>[
                     FlatButton(
                         onPressed: () {
@@ -49,28 +55,32 @@ class CartItem extends StatelessWidget {
                   ],
                 ));
       },
-      onDismissed: (direction) => {Provider.of<Cart>(context, listen: false).removeItem(productId)},
+      onDismissed: (direction) =>
+          {Provider.of<Cart>(context, listen: false).removeItem(productId)},
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
         child: Padding(
           padding: EdgeInsets.all(8),
-          child: ListTile(
-            leading: CircleAvatar(
-              child: FittedBox(
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Text(
-                    "\$$price",
-                    style: TextStyle(color: Colors.white),
+          child: Container(
+            color: Colors.grey[100],
+            child: ListTile(
+              leading: CircleAvatar(
+                child: FittedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Text(
+                      "\$$price",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
+                backgroundColor: Colors.green,
               ),
-              backgroundColor: Colors.green,
+              // tileColor: Colors.grey[100],
+              title: Text(title),
+              subtitle: Text("Total: \$${price * quantity}"),
+              trailing: Text("$quantity x"),
             ),
-            tileColor: Colors.grey[100],
-            title: Text(title),
-            subtitle: Text("Total: \$${price * quantity}"),
-            trailing: Text("$quantity x"),
           ),
         ),
       ),

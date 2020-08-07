@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 class Product with ChangeNotifier {
-  final Uuid id = Uuid();
+  final Uuid id;
   final String title;
   final String description;
   final double price;
@@ -10,6 +10,7 @@ class Product with ChangeNotifier {
   bool isFavorite;
 
   Product({
+    @required this.id,
     @required this.title,
     @required this.description,
     @required this.price,

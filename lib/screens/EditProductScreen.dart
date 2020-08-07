@@ -1,5 +1,8 @@
-import 'package:Yummy/providers/product.dart';
+import 'package:Yummy/providers/Product.dart';
 import 'package:flutter/material.dart';
+import "package:provider/provider.dart";
+
+import '../providers/Products.dart';
 
 //edits the product item when user goes to manage product screen and press edit button
 class EditProductScreen extends StatefulWidget {
@@ -22,6 +25,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
     description: "",
     imageUrl: "",
   );
+  bool _isInit = true;
+  // since we are populating the textfields with previous values of product, we use map
+  var _initValues = {
+    "title": "",
+    "price": "",
+    "description": "",
+    "imageUrl": "",
+  };
 
   @override
   void initState() {
@@ -35,23 +46,57 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    //makes below code run only one time
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments;
+      //fills editedproduct with selected product
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        // runs when we are editing products
+        _initValues = {
+          "title": _editedProduct.title,
+          "price": _editedProduct.price.toString(),
+          "description": _editedProduct.description,
+          "imageUrl": "",
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+  }
+
+  @override
   void dispose() {
     super.dispose();
-    _priceFocusNode.dispose(); //manually dispose focus node. otherwise, they lead to memory leakage
+    _priceFocusNode
+        .dispose(); //manually dispose focus node. otherwise, they lead to memory leakage
     _descriptionFocusNode.dispose();
     _imageUrlFocusNode.dispose();
     _imageUrlController.dispose();
   }
 
-//saves form state
+  //saves form state
   void _saveform() {
-    //we defined global key for form for this reason - to save the form state
-    _formKey.currentState.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.description);
-    print(_editedProduct.id);
-    print(_editedProduct.imageUrl);
+    bool isValid = _formKey.currentState.validate();
+    if (isValid) {
+      //we defined global key for form for this reason - to save the form state
+      _formKey.currentState.save();
+
+      // if the product already exist, you can check this by using product id,
+      if (_editedProduct.id != null) {
+        Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } else {
+        // connecting products provider and adding new products to the items which we get from our form
+        Provider.of<Products>(context, listen: false)
+            .addProduct(_editedProduct);
+      }
+
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -71,10 +116,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 children: [
                   Card(
                     child: TextFormField(
-                      decoration: InputDecoration(labelText: "Title", contentPadding: EdgeInsets.all(9)),
+                      initialValue: _initValues["title"],
+                      decoration: InputDecoration(
+                          labelText: "Title",
+                          contentPadding: EdgeInsets.all(9)),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) {
                         FocusScope.of(context).requestFocus(_priceFocusNode);
+                      },
+                      //validates the text field
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Please enter a valid title";
+                        }
+                        return null;
                       },
                       onSaved: (title) {
                         _editedProduct = Product(
@@ -82,18 +137,32 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: _editedProduct.description,
                           price: _editedProduct.price,
                           imageUrl: _editedProduct.imageUrl,
+                          isFavorite: _editedProduct.isFavorite,
+                          id: _editedProduct.id,
                         );
                       },
                     ),
                   ),
                   Card(
                     child: TextFormField(
-                      decoration: InputDecoration(labelText: "Price", contentPadding: EdgeInsets.all(9)),
+                      initialValue: _initValues["price"],
+                      decoration: InputDecoration(
+                          labelText: "Price",
+                          contentPadding: EdgeInsets.all(9)),
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
                       focusNode: _priceFocusNode,
                       onFieldSubmitted: (_) {
-                        FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                        FocusScope.of(context)
+                            .requestFocus(_descriptionFocusNode);
+                      },
+                      validator: (value) {
+                        if (value.isEmpty ||
+                            (double.parse(value) == null) ||
+                            (double.parse(value) <= 0)) {
+                          return "Please enter a valid price!";
+                        }
+                        return null;
                       },
                       onSaved: (price) {
                         _editedProduct = Product(
@@ -101,22 +170,35 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: _editedProduct.description,
                           price: double.parse(price),
                           imageUrl: _editedProduct.imageUrl,
+                          isFavorite: _editedProduct.isFavorite,
+                          id: _editedProduct.id,
                         );
                       },
                     ),
                   ),
                   Card(
                     child: TextFormField(
-                      decoration: InputDecoration(labelText: "Description", contentPadding: EdgeInsets.all(9)),
+                      initialValue: _initValues["description"],
+                      decoration: InputDecoration(
+                          labelText: "Description",
+                          contentPadding: EdgeInsets.all(9)),
                       maxLines: 3,
                       keyboardType: TextInputType.multiline,
                       focusNode: _descriptionFocusNode,
+                      validator: (value) {
+                        if (value.isEmpty || value.length <= 5) {
+                          return "Please enter a valid description(at least 5 characters long)";
+                        }
+                        return null;
+                      },
                       onSaved: (description) {
                         _editedProduct = Product(
                           title: _editedProduct.title,
                           description: description,
                           price: _editedProduct.price,
                           imageUrl: _editedProduct.imageUrl,
+                          isFavorite: _editedProduct.isFavorite,
+                          id: _editedProduct.id,
                         );
                       },
                     ),
@@ -166,12 +248,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             onFieldSubmitted: (_) {
                               _saveform();
                             },
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return "Please enter a valid URL";
+                              }
+                              return null;
+                            },
                             onSaved: (imageUrl) {
                               _editedProduct = Product(
                                 title: _editedProduct.title,
                                 description: _editedProduct.description,
                                 price: _editedProduct.price,
                                 imageUrl: imageUrl,
+                                isFavorite: _editedProduct.isFavorite,
+                                id: _editedProduct.id,
                               );
                             },
                           ),

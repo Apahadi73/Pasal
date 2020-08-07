@@ -2,8 +2,8 @@ import 'package:Yummy/providers/Cart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/product_detail_screen.dart';
-import '../providers/product.dart';
+import '../screens/ProductDetailScreen.dart';
+import '../providers/Product.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -61,7 +61,7 @@ class ProductItem extends StatelessWidget {
               ),
               trailing: IconButton(
                 icon: Icon(
-                  Icons.add_shopping_cart_sharp,
+                  Icons.add_shopping_cart,
                 ),
                 onPressed: () {
                   cart.addItems(product.id, product.price, product.title);
