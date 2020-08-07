@@ -1,23 +1,18 @@
 import 'package:Yummy/screens/EditProductScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 import '../providers/Products.dart';
 
 //if you want to see item widget,go to Your Products Screen
 //build user sold products item
 class UserProductItem extends StatelessWidget {
-  final Uuid id;
+  final String id;
   final String title;
-  final double price;
   final String imageUrl;
 
   UserProductItem(
-      {@required this.id,
-      @required this.title,
-      @required this.price,
-      @required this.imageUrl});
+      {@required this.id, @required this.title, @required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {

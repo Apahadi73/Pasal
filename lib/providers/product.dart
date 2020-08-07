@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
 
 class Product with ChangeNotifier {
-  final Uuid id;
+  final String id;
   final String title;
   final String description;
   final double price;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 class CartItem {
-  final Uuid id;
+  final String id;
   final String title;
   final int quantity;
   final double price;
@@ -16,9 +15,9 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  Map<Uuid, CartItem> _items = {};
+  Map<String, CartItem> _items = {};
 
-  Map<Uuid, CartItem> get items {
+  Map<String, CartItem> get items {
     return {..._items};
   }
 
@@ -38,7 +37,7 @@ class Cart with ChangeNotifier {
     return total;
   }
 
-  void addItems(Uuid productId, double price, String title) {
+  void addItems(String productId, double price, String title) {
     if (_items.containsKey(productId)) {
       _items.update(
           productId,
@@ -52,7 +51,7 @@ class Cart with ChangeNotifier {
       _items.putIfAbsent(
           productId,
           () => CartItem(
-                id: Uuid(),
+                id: DateTime.now().toIso8601String(),
                 title: title,
                 quantity: 1,
                 price: price,
@@ -61,12 +60,12 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeItem(Uuid productId) {
+  void removeItem(String productId) {
     _items.remove(productId);
     notifyListeners();
   }
 
-  void removeSingleItgem(Uuid productId) {
+  void removeSingleItgem(String productId) {
     if (!_items.containsKey(productId)) {
       return;
     }
